@@ -2,11 +2,11 @@
 
 Terraform Module
   1.	Networking
-        •	VPC, Internet gateway, NAT, Router table, 2 private subnets, 2 public subnets, Security group
+        :	VPC, Internet gateway, NAT, Router table, 2 private subnets, 2 public subnets, Security group
   2.	ERC
-        •	Backend and frontend
+        :	Backend and frontend
   3.	EKS
-        •	IAM, Node group, EKS
+        :	IAM, Node group, EKS
   4.	Jenkins
-        •	Install docker, Install jenkins
+        :	Install docker, install Jenkins
 
