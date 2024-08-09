@@ -26,7 +26,7 @@ resource "aws_instance" "jenkins_server" {
               sudo apt-get install -y openjdk-11-jdk
 
               # Install Jenkins
-              curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+              curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
                 /usr/share/keyrings/jenkins-keyring.asc > /dev/null
               echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
                 https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
@@ -40,6 +40,13 @@ resource "aws_instance" "jenkins_server" {
 
               # Install additional tools
               sudo apt-get install -y git
+
+              #open port
+              sudo apt update
+              sudo apt install ufw
+              sudo ufw allow 8080
+              sudo ufw allow OpenSSH
+              sudo ufw enable
 
               # Print Jenkins initial admin password
               echo "Jenkins initial admin password:"

@@ -7,5 +7,5 @@ variable "instance_type" {
 variable "subnet_id" {}
 variable "security_group_id" {}
 variable "key_name" {
-  default = "sd2376-key_name-ec2"
+  default = "sd2376-key-name-ec2"
 }
