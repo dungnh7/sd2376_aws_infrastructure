@@ -1,3 +1,39 @@
+
+resource "aws_iam_role" "eks_nodes" {
+  name = "eks-nodes-role"
+
+  assume_role_policy = jsonencode({
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "ec2.amazonaws.com"
+      }
+    }]
+    Version = "2012-10-17"
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "nodes-AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.eks_nodes.name
+}
+
+resource "aws_iam_role_policy_attachment" "nodes-AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.eks_nodes.name
+}
+
+resource "aws_iam_role_policy_attachment" "nodes-AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_nodes.name
+}
+
+
+
+
+
+
 resource "aws_iam_role" "eks" {
   name = "sd2376eksaimeks"
 
@@ -13,20 +49,6 @@ resource "aws_iam_role" "eks" {
   })
 }
 
-resource "aws_iam_role" "nodes" {
-  name = "sd2376eksaimnodes"
-
-  assume_role_policy = jsonencode({
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-    Version = "2012-10-17"
-  })
-}
 
 resource "aws_iam_role_policy_attachment" "eks_AmazonEKSClusterPolicy" {
   role       = aws_iam_role.eks.name
@@ -35,29 +57,12 @@ resource "aws_iam_role_policy_attachment" "eks_AmazonEKSClusterPolicy" {
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSServicePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = "${aws_iam_role.eks.name}"
+  role       = aws_iam_role.eks.name
 }
 
 resource "aws_iam_role_policy_attachment" "eks_AmazonEKSVPCResourceController" {
-  role       = aws_iam_role.nodes.name
+  role       = aws_iam_role.eks.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-}
-
-
-
-resource "aws_iam_role_policy_attachment" "nodes-AmazonEKSWorkerNodePolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.nodes.name
-}
-
-resource "aws_iam_role_policy_attachment" "nodes-AmazonEKS_CNI_Policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.nodes.name
-}
-
-resource "aws_iam_role_policy_attachment" "nodes-AmazonEC2ContainerRegistryReadOnly" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.nodes.name
 }
 
 
@@ -78,15 +83,16 @@ resource "aws_eks_cluster" "eks" {
 }
 
 
+
 resource "aws_eks_node_group" "private-nodes" {
   cluster_name    = aws_eks_cluster.eks.name
   node_group_name = "private-nodes"
-  node_role_arn   = aws_iam_role.nodes.arn
+  node_role_arn   = aws_iam_role.eks_nodes.arn
 
   subnet_ids = var.subnet_ids
 
   capacity_type  = "ON_DEMAND"
-  instance_types = ["t3.small"]
+  instance_types = ["t3.micro"]
 
   scaling_config {
     desired_size = 1

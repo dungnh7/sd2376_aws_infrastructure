@@ -96,3 +96,67 @@ resource "aws_security_group" "allow_ssh_http" {
     Name = "allow_ssh_http"
   }
 }
+
+resource "aws_eip" "nat" {
+  domain     = "vpc"
+  tags = {
+    Name = "nat"
+  }
+}
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public-ap-southeast-1a.id
+
+  tags = {
+    Name = "nat"
+  }
+
+  depends_on = [aws_internet_gateway.igw]
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block   = "0.0.0.0/0"
+    gateway_id   = aws_nat_gateway.nat.id
+  }
+
+  tags = {
+    Name = "private"
+  }
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block   = "0.0.0.0/0"
+    gateway_id   = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "public"
+  }
+}
+
+resource "aws_route_table_association" "private-ap-southeast-1a" {
+  subnet_id      = aws_subnet.private-ap-southeast-1a.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private-ap-southeast-1b" {
+  subnet_id      = aws_subnet.private-ap-southeast-1b.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "public-ap-southeast-1a" {
+  subnet_id      = aws_subnet.public-ap-southeast-1a.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table_association" "public-ap-southeast-1b" {
+  subnet_id      = aws_subnet.public-ap-southeast-1b.id
+  route_table_id = aws_route_table.public.id
+}
