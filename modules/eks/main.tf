@@ -92,11 +92,11 @@ resource "aws_eks_node_group" "private-nodes" {
   subnet_ids = var.subnet_ids
 
   capacity_type  = "SPOT"
-  instance_types = ["t3.micro"]
+  instance_types = ["t3.small"]
 
   scaling_config {
-    desired_size = 2
-    max_size     = 3
+    desired_size = 1
+    max_size     = 5
     min_size     = 0
   }
 
