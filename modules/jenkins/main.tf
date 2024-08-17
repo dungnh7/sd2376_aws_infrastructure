@@ -51,6 +51,28 @@ resource "aws_instance" "jenkins_server" {
               # Print Jenkins initial admin password
               echo "Jenkins initial admin password:"
               sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+              #end for jenkins
+
+              #fix issue docker
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              sudo apt install unzip
+              unzip awscliv2.zip
+              sudo ./aws/install
+
+              #setup kubectl
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+              chmod +x kubectl
+              mkdir -p ~/.local/bin
+              mv ./kubectl ~/.local/bin/kubectl
+
+              #Fix docker
+              sudo chmod 666 /var/run/docker.sock
+
+              #setup helm
+              sudo rm -rf /usr/local/bin/helm
+              sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
               EOF
 
   tags = {
