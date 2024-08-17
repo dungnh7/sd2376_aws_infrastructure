@@ -8,5 +8,5 @@ Terraform Module
   3.	EKS
         :	IAM, Node group, EKS
   4.	Jenkins
-        :	EC2, Install docker, install Jenkins
+        :	EC2, Install docker, install Jenkins, install helm, install aws cli, kubectl etc.
 
