@@ -73,11 +73,6 @@ resource "aws_instance" "jenkins_server" {
               #setup helm
               sudo rm -rf /usr/local/bin/helm
               sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-              chmod 700 get_helm.sh
-              ./get_helm.sh
-
               EOF
 
   tags = {
